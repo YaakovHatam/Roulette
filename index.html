@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <link href="style/bootstrap.min.css" rel="stylesheet" />
+    <link href="style/drink.css" rel="stylesheet">
+    <script src="scripts/jquery-1.10.2.min.js"></script>
+    <script src="scripts/fabric.js"></script>
+    <script src="scripts/hammer.js"></script>
+    <script>
+    var isMobile = false; //initiate as false
+// device detection
+if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|ipad|iris|kindle|Android|Silk|lge |maemo|midp|mmp|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i.test(navigator.userAgent)
+    || /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(navigator.userAgent.substr(0,4))) isMobile = true;
+    </script>
+</head>
+<body>
+    <div class="container body-content">
+        <div class="course">
+            <a href="/">קורס פיתוח למתחילים - HTML, CSS &amp; JavaScript</a>
+        </div>
+        <div class="rltt">
+            <canvas id="c" width="320" height="320"></canvas>
+       </div>
+
+        <div class="hidden">
+            <audio controls="controls" id="rouletteSound">
+                <source src="sound/roulette1.mp3" type="audio/mpeg" />
+            </audio>
+        </div>
+        <script>
+    var canvas = this.__canvas = new fabric.StaticCanvas('c', {
+        hoverCursor: 'pointer',
+        selection: false,
+        perPixelTargetFind: true,
+        targetFindTolerance: 5
+    });
+    if (!isMobile) {
+        canvas.setHeight(600);
+        canvas.setWidth(600);
+    }
+
+    fabric.Object.prototype.originX = 'center';
+    fabric.Object.prototype.originY = 'center';
+    fabric.Object.prototypehasBorders = false;
+    fabric.Object.prototype.hasControls = false;
+
+    var app = {};
+    app.height = canvas.getHeight();
+    app.width = canvas.getWidth();
+    app.AspectRatio = 2; //1:x
+    app.NumbersSlotsHeight = 60;
+    app.IsWorking = false;
+
+    app.Wheel = {};
+    app.Wheel.Duration = 8 * 1000;
+    app.Wheel.Rounds = 22;
+    app.Wheel.ImgSrc = 'images/wheel1200.png';
+    app.Wheel.FirstSlot = 'green';
+    app.Wheel.EventSlot = 'red';
+    app.Wheel.OddtSlot = 'black';
+
+    app.Ball = {};
+    app.Ball.Radius = app.width/3.2;
+    app.Ball.Rounds = function () { return app.Wheel.Rounds + 1 }; //to be random
+    app.Ball.LastRound = false;
+    app.Ball.CurrentRound = 0; //to be random
+    app.Ball.rotationSpeedFactor = 0.5;
+    app.Ball.Size = app.width/30;
+    app.Ball.imgSrc = 'images/ball.png';
+    app.Ball.BallObj;
+    app.Ball.landingPosition = [3, 12, 22, 32, 42, 52, 61, 71, 81, 91, 100, 110, 120, 130, 139, 149, 159, 169, 178, 188, 198, 208, 218, 227, 237, 247, 257, 267, 276, 286, 296, 306, 315, 325, 335, 345, 354]; //TODO: make it dynamic
+
+    app.Drink = {};
+    app.Drink.DrinkObj = {};
+    app.Drink.DrinkObj.image;
+    app.Drink.DrinkObj.descr;
+    app.Drink.types = [
+        {
+            src: 'images/drink2.jpg',
+            descr: 'The only thing better than being helped up by James Bond is drinking this cocktail - a delightful combination of vodka shaken with some fresh espresso and coffee liqueur to give you the perfect pick-me-up.'
+        },
+        {
+            src: 'images/drink1.jpg',
+            descr: 'This delicious drink is a blend of vodka with a splash of Cointreau and a dash of orange juice. Shaken together and topped with sparkling wine to give it some bubbles and take you to a place that only Mr Bond could be.'
+        }
+    ];
+
+    app.Sound = {};
+    app.Sound.isOn = true;
+    app.Sound.SoundObj = document.getElementById('rouletteSound');
+    app.ChoosenNumIndex;
+
+    var TrianglesGroup = new fabric.Group(null, { left: app.width / 2, top: app.height / 2 });
+    var RouletteNumbersGroup = new fabric.Group(null, { left: app.width / 2, top: app.height / 2 });
+    var circleDegrees = 360;
+    var RoundsPerSecond = 2;
+    var RouletteNumbers = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26];
+    var TrianglesNum = RouletteNumbers.length;
+
+    function BreakTextToLines(text, maxCharsLengthPerLine) {
+
+        var words = text.split(' ');
+
+        var NewText = '';
+        var CharsCounter = 0;
+        for (i = 0; i < words.length ; i++)
+        {
+            NewText += words[i] += ' ';
+            CharsCounter += words[i].length;
+            if (CharsCounter > maxCharsLengthPerLine) {
+                NewText += "\n";
+                CharsCounter = 0;
+            }
+        }
+        return NewText;
+    }
+
+    function Point(x, y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    function RadiansToDegress(rad) {
+        return rad * Math.PI / 180;
+    }
+
+    function CalcuatePoint(CircleElements, radius, iterator) {
+        var divider = circleDegrees / CircleElements;
+        var angle = divider * iterator;
+        return new Point(radius * Math.cos(RadiansToDegress(angle)), radius * Math.sin(RadiansToDegress(angle)));
+    }
+
+
+        for (i = 0; i < TrianglesNum; i++) {
+            RouletteNumbersGroup.add(new fabric.Text(RouletteNumbers[i].toString(), {
+                angle: -(circleDegrees / TrianglesNum) * i,
+                top: (CalcuatePoint(TrianglesNum, app.width / 4 , i).x),
+                left: (CalcuatePoint(TrianglesNum, app.width / 4 , i).y),
+                fill: 'white',
+                fontSize: app.width/30
+            }));
+
+            TrianglesGroup.add(new fabric.Triangle({
+                angle: (circleDegrees / TrianglesNum) * i,
+                width: app.height / (6.5 * app.AspectRatio),
+                height: app.height / app.AspectRatio - 2,
+                originY: 'top',
+                fill: (i == 0 ? app.Wheel.FirstSlot : (i % 2 == 0 ? app.Wheel.EventSlot : app.Wheel.OddtSlot))
+            }));
+
+        }
+        var group = new fabric.Group([TrianglesGroup, RouletteNumbersGroup], {
+            left: app.width / 2,
+            top: app.height / 2
+        });
+
+        fabric.Image.fromURL('images/bg1200.png', function (oImg) {
+            canvas.add(oImg);
+            canvas.centerObject(oImg);
+            canvas.renderAll();
+
+            /* wheel */
+            fabric.Image.fromURL(app.Wheel.ImgSrc, function (oImg) {
+                group.add(oImg);
+                canvas.add(group);
+                canvas.renderAll();
+            }, {
+                width: app.width,
+                height: app.height,
+            });
+            /* end wheel */
+
+        }, {
+            width: app.width,
+            height: app.height,
+        });
+
+    function animateWheel() {
+        group.animate('angle', "+=" + (circleDegrees * app.Wheel.Rounds).toString(), {
+            duration: app.Wheel.Duration,
+            onChange: canvas.renderAll.bind(canvas),
+            easing: fabric.util.ease.easeInOutCubic,
+            onComplete: function () { app.Ball.LastRound = true; }
+        });
+    }
+
+    function StartBall() {
+        if (typeof app.Ball.BallObj === 'undefined') {
+            fabric.Image.fromURL(app.Ball.imgSrc, function (ballImg) {
+                app.Ball.BallObj = ballImg;
+                canvas.add(app.Ball.BallObj);
+                canvas.renderAll();
+                animatePlanet(app.Ball.BallObj);
+            }, {
+                width: app.Ball.Size,
+                height: app.Ball.Size,
+                index: 0,
+                left: (canvas.getWidth() / 2) - 90,
+                top: canvas.getHeight() / 2
+            });
+        }
+        else {
+            canvas.add(app.Ball.BallObj);
+            canvas.renderAll();
+            animatePlanet(app.Ball.BallObj);
+        }
+
+
+        function animatePlanet(oImg) {
+            var cx = canvas.getWidth() / 2,
+            cy = canvas.getHeight() / 2;
+
+
+            var rand = fabric.util.getRandomInt(0, (TrianglesNum - 1));
+
+            var _p = CalcuatePoint(TrianglesNum, app.height / 2 - 150, rand);
+            _p.x += cx;
+            _p.y += cy;
+
+            var angx = app.Ball.landingPosition[Math.floor(Math.random()*app.Ball.landingPosition.length)];
+
+            startAngle = angx ,
+            endAngle = angx + 359;
+            console.log(angx);
+            (function animate() {
+                if (app.Ball.LastRound) {
+                    app.Ball.CurrentRound = 0;
+                    app.ChoosenNumIndex = rand;
+                    EndOfWheel();
+                    return;
+                } else app.Ball.CurrentRound++;
+
+                fabric.util.animate({
+                    startValue: startAngle,
+                    endValue: endAngle,
+                    duration: app.Ball.rotationSpeedFactor * 1000 * app.Ball.CurrentRound,
+
+                    // linear movement
+                    easing: function (t, b, c, d) { return c * t / d + b; },
+
+                    onChange: function (angle) {
+                        angle = fabric.util.degreesToRadians(angle);
+
+                        var x = cx + app.Ball.Radius * Math.cos(angle);
+                        var y = cy + app.Ball.Radius * Math.sin(angle);
+
+                        oImg.set({ left: x, top: y }).setCoords();
+
+                        canvas.renderAll();
+                    },
+                    onComplete: animate
+                });
+            })();
+        }
+    };
+
+    function EndOfWheel() {
+        /*
+        fabric.Image.fromURL(app.Drink.types[app.ChoosenNumIndex%2].src, function (oImg) {
+            app.Drink.DrinkObj.image = oImg;
+            canvas.add(oImg);
+            canvas.centerObjectH(oImg);
+
+            app.Drink.DrinkObj.descr = new fabric.Text(BreakTextToLines(app.Drink.types[app.ChoosenNumIndex % 2].descr, 30), {
+                fill: 'white',
+                fontSize: 20
+            });
+            canvas.centerObject(app.Drink.DrinkObj.descr);
+            canvas.add(app.Drink.DrinkObj.descr);
+
+            canvas.renderAll();
+            $('#numChosen').text(RouletteNumbers[app.ChoosenNumIndex]);
+            if (app.Sound.isOn)
+                app.Sound.SoundObj.pause();
+        }, {
+            top: app.height / 4,
+            width: 100,
+            height: 100,
+        });
+        */
+
+        app.IsWorking = false;
+        app.Ball.LastRound = false;
+        app.Ball.CurrentRound = 0;
+    }
+
+
+    function Start() {
+        if (app.IsWorking) //mutex
+            return;
+
+        app.IsWorking = true;
+        canvas.remove(app.Ball.BallObj);
+        canvas.remove(app.Drink.DrinkObj.image);
+        canvas.remove(app.Drink.DrinkObj.descr);
+
+        if (app.Sound.isOn) {
+            app.Sound.SoundObj.currentTime = 0;
+            app.Sound.SoundObj.play();
+        }
+
+        app.Wheel.Rounds = fabric.util.getRandomInt(12, 19);
+
+        animateWheel();
+
+        setTimeout(function () {
+            StartBall();
+        }, 2000);
+    }
+        </script>
+
+        <script>
+    //RegisterEvents
+    (function () {
+        var _c = document.getElementById('c');
+        // create a simple instance
+        // by default, it only adds horizontal recognizers
+        var mc = new Hammer(_c);
+        mc.get('pan').set({ direction: Hammer.DIRECTION_ALL });
+        // listen to events...
+        mc.on("pandown", function (ev) { //tap press
+            switch (ev.type) {
+                case 'pandown':
+                    Start();
+                    break;
+            }
+        });
+    })();
+        </script>
+    </div>
+</body>
+</html>
