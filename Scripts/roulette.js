@@ -21,6 +21,7 @@
     app.NumbersSlotsHeight = 60;
     app.IsWorking = false;
 
+
     app.Wheel = {};
     app.Wheel.Duration = 8 * 1000;
     app.Wheel.Rounds = 22;
@@ -28,6 +29,7 @@
     app.Wheel.FirstSlot = 'green';
     app.Wheel.EventSlot = 'red';
     app.Wheel.OddtSlot = 'black';
+
 
     app.Ball = {};
     app.Ball.Radius = app.width/3.2;
@@ -39,6 +41,7 @@
     app.Ball.imgSrc = 'images/ball.png';
     app.Ball.BallObj;
     app.Ball.landingPosition = [3, 12, 22, 32, 42, 52, 61, 71, 81, 91, 100, 110, 120, 130, 139, 149, 159, 169, 178, 188, 198, 208, 218, 227, 237, 247, 257, 267, 276, 286, 296, 306, 315, 325, 335, 345, 354]; //TODO: make it dynamic
+
 
     app.Drink = {};
     app.Drink.DrinkObj = {};
@@ -54,6 +57,7 @@
             descr: 'This delicious drink is a blend of vodka with a splash of Cointreau and a dash of orange juice. Shaken together and topped with sparkling wine to give it some bubbles and take you to a place that only Mr Bond could be.'
         }
     ];
+
 
     app.Sound = {};
     app.Sound.isOn = true;
