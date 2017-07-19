@@ -1,2 +1,2 @@
 # Roulette
-Made with Fabric.js
+Made with AWSOME Fabric.js
